@@ -1,35 +1,28 @@
 # FreeCAD Project Code of Conduct
 
-## Statement
+## Community Guidelines
 
-The FreeCAD Project community covers people from a wide variety of countries,
-backgrounds and positions. This global diversity is a great strength of the
-project, but can also lead to communication issues, which may in turn cause
-unhappiness. To maximise happiness of the project community taken as a whole,
-all members (whether users, contributors or committers) are expected to abide
-by the project's code of conduct. At a high level the code can be summarized
-as *"be excellent to each other"*. Expanding on this:
+The FreeCAD Project community covers people from a wide range of countries,
+backgrounds and positions. This diversity is a great strength of the project,
+but can also lead to misunderstandings. To promote a positive community all
+members are expected to follow these guidelines:
 
-* **Be respectful**: disagreements between people are to be expected and are
-  usually the sign of healthy debate and engagement. Disagreements can lead to
-  frustration and even anger for some members. Turning to personal insults,
-  intimidation or threatening behaviour does not improve the situation though.
-  Participants should thus take care to ensure all communications /
-  interactions stay professional at all times.
+* **Be respectful and considerate**: Disagreements between people are to be
+  expected and are usually a sign of healthy debate and engagement. But
+  disagreements are no excuse for poor behavior or personal attacks. Always
+  remember that your actions can have consequences for other community members
+  and the project as a whole.
+  
+* **Be patient and generous**: Always take help requests seriously. If appropriate,
+  you can politely point out missing information, or refer to available information,
+  but avoid aggressive or vague responses. If something seems outrageous, do not
+  assume the worst, but ask for clarification first. Keep in mind that for many
+  members English is a second language.
 
-* **Be considerate**: remember that the community has members with a diverse
-  background many of whom have English as a second language. What might appear
-  impolite, may simply be a result of a lack of knowledge of the English
-  language. Bear in mind that actions will have an impact on other community
-  members and the project as a whole, so take potential consequences into
-  account before pursuing a course of action.
-
-* **Be forgiving**: humans are fallible and as such prone to make mistakes and
-  inexplicably change their positions at times. Don't assume that other members
-  are acting with malicious intent. Be prepared to forgive people who make
-  mistakes and assist each other in learning from them. Playing a blame game
-  doesn't help anyone.
-
+* **Be forgiving**: humans are fallible and prone to make mistakes and inexplicably
+  change their positions at times. Don't assume that other members are acting with
+  malicious intent. Be prepared to forgive people who make mistakes and assist
+  each other in learning from them. Playing a blame game doesn't help anyone.
 
 ## Our Responsibilities
 
