@@ -60,7 +60,7 @@ A moderator might merge duplicate discussion threads, split a single conversatio
 
 When debates become heated and unproductive, a moderator may issue a public reminder to remain civil, temporarily lock a thread, or warn individuals.
 
-#### 6. Manage users
+### 6. Manage users
 
 In cases of repeated or severe rule-breaking, a moderator has the authority to warn, suspend, or permanently ban users from the community.
 
