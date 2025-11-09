@@ -42,7 +42,7 @@ These are the key tasks and responsibilities of a moderator:
 
 ### 1. Enforce guidelines
 
-A moderator ensures that all participants adhere to the community's established rules, such as no personal attacks.
+A moderator ensures that all participants adhere to the Community Guidelines.
 
 ### 2. Remove inappropriate content
 
