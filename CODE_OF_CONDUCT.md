@@ -17,7 +17,7 @@ and the project as a whole.
   
 ### B. Be patient and generous
 
-Always take help requests seriously. If appropriate,
+Always take requests for help seriously. If appropriate,
 you can politely point out missing information, or refer to available information,
 but avoid aggressive or vague responses. If something seems outrageous, do not
 assume the worst, but ask for clarification first. Keep in mind that for many
@@ -25,10 +25,44 @@ members English is a second language.
 
 ### C. Be forgiving
 
-humans are fallible and prone to make mistakes and inexplicably
+Humans are fallible and prone to make mistakes and inexplicably
 change their positions at times. Don't assume that other members are acting with
 malicious intent. Be prepared to forgive people who make mistakes and assist
 each other in learning from them. Playing a blame game doesn't help anyone.
+
+## Forum Guidelines
+
+### D.
+
+### E.
+
+## Forum Moderator Guidelines
+
+These are the key tasks and responsibilities of a moderator:
+
+### 1. Enforce guidelines
+
+A moderator ensures that all participants adhere to the community's established rules, such as no personal attacks.
+
+### 2. Remove inappropriate content
+
+A moderator must remove posts, comments, or images that violate the rules. This includes off-topic material that derails the conversation.
+
+### 3. Keep discussions on-topic
+
+If a conversation strays too far from its original purpose, a moderator should gently guide it back on track to keep it relevant and productive.
+
+### 4. Organize content
+
+A moderator might merge duplicate discussion threads, split a single conversation into multiple topics if it becomes too broad so users can easily find what they are looking for.
+
+### 5. De-escalate conflicts
+
+When debates become heated and unproductive, a moderator may issue a public reminder to remain civil, temporarily lock a thread, or warn individuals.
+
+#### 6. Manage users
+
+In cases of repeated or severe rule-breaking, a moderator has the authority to warn, suspend, or permanently ban users from the community.
 
 ## Scope
 
