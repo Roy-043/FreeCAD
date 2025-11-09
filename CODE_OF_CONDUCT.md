@@ -7,22 +7,28 @@ backgrounds and positions. This diversity is a great strength of the project,
 but can also lead to misunderstandings. To promote a positive community all
 members are expected to follow these guidelines:
 
-* **Be respectful and considerate**: Disagreements between people are to be
-  expected and are usually a sign of healthy debate and engagement. But
-  disagreements are no excuse for poor behavior or personal attacks. Always
-  remember that your actions can have consequences for other community members
-  and the project as a whole.
-  
-* **Be patient and generous**: Always take help requests seriously. If appropriate,
-  you can politely point out missing information, or refer to available information,
-  but avoid aggressive or vague responses. If something seems outrageous, do not
-  assume the worst, but ask for clarification first. Keep in mind that for many
-  members English is a second language.
+### A. Be respectful and considerate
 
-* **Be forgiving**: humans are fallible and prone to make mistakes and inexplicably
-  change their positions at times. Don't assume that other members are acting with
-  malicious intent. Be prepared to forgive people who make mistakes and assist
-  each other in learning from them. Playing a blame game doesn't help anyone.
+Disagreements between people are to be
+expected and are usually a sign of healthy debate and engagement. But
+disagreements are no excuse for poor behavior or personal attacks. Always
+remember that your actions can have consequences for other community members
+and the project as a whole.
+  
+### B. Be patient and generous
+
+Always take help requests seriously. If appropriate,
+you can politely point out missing information, or refer to available information,
+but avoid aggressive or vague responses. If something seems outrageous, do not
+assume the worst, but ask for clarification first. Keep in mind that for many
+members English is a second language.
+
+### C. Be forgiving
+
+humans are fallible and prone to make mistakes and inexplicably
+change their positions at times. Don't assume that other members are acting with
+malicious intent. Be prepared to forgive people who make mistakes and assist
+each other in learning from them. Playing a blame game doesn't help anyone.
 
 ## Scope
 
