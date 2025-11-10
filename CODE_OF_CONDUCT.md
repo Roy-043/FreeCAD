@@ -42,7 +42,7 @@ The FreeCAD forum is governed by the Community Guidelines. But the following mor
 
 5. Use GitHub for discussions related to coding. We use GitHub to develop the FreeCAD software and therefore most coding related discussions happen there. If you want to participate in those discussions, or contribute to the software, you need to use that platform.
 
-## Forum Moderator Guidelines and Responsibilities
+## Forum Moderator Responsibilities
 
 These are the key tasks and responsibilities of a moderator:
 
