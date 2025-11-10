@@ -29,7 +29,7 @@ The FreeCAD forum is governed by the Community Guidelines. But the following mor
 
 1. Do not post inappropriate content:
     - Do not post copyrighted material unless you are the copyrightholder.
-    - Do not post spam. Messages whose sole purpose is to promote a product or website are not allowed.
+    - Do not post spam. Messages whose main purpose is to promote a product or website are not allowed.
     - You can use AI to translate texts, but do not post AI generated content that adds nothing to a discussion.
     - Do not attack other community members, including other forum users and FreeCAD developers.
     - Do not use foul language, do not swear or insult.
