@@ -63,6 +63,8 @@ is deemed necessary and appropriate to the circumstances. The project team is
 obligated to maintain confidentiality with regard to the reporter of an incident.
 Further details of specific enforcement policies may be posted separately.
 
+A forum user who violate the rules of the Code of Conduct or the Forum Guidelines will be warned two times. If the user then does not correct their behavior a temporary ban will be issued. Further cases of misconduct will lead to a permanent ban. In the case of a particularly severe misbehavior, an immediate ban can be issued.
+
 Project maintainers who do not follow or enforce the Code of Conduct in good
 faith may face temporary or permanent repercussions as determined by other
 members of the project's leadership.
