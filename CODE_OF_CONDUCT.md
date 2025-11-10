@@ -40,7 +40,7 @@ The FreeCAD forum is governed by the Community Guidelines. But the following mor
 
 4. Do not ecscalate conflicts. If conflicts arise, do not add fuel but instead de-escalate. If you think a forum member misbehaves or you feel injustly treated, report the problem to moderators so that they can take appropriate steps.
 
-5. Use GitHub for discussions related to the FreeCAD source code. We use GitHub to develop the FreeCAD software and therefore most coding related discussions happen there. If you want to participate in those discussions, or contribute to the software, you need to use that platform.
+5. Use GitHub for discussions related to the FreeCAD source code. We use GitHub to develop the FreeCAD software and therefore coding related should discussions happen there. If you want to participate in those discussions, or contribute to the software, you need to use that platform.
 
 ## Forum Moderator Responsibilities
 
