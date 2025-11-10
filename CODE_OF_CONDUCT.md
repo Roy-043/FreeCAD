@@ -42,7 +42,18 @@ The FreeCAD forum is governed by the Community Guidelines. But the following mor
 
 5. Use GitHub for discussions related to coding. We use GitHub to develop the FreeCAD software and therefore most coding related discussions happen there. If you want to participate in those discussions, or contribute to the software, you need to use that platform.
 
-## Forum Moderator Guidelines
+## Scope
+
+This Code of Conduct applies both within project spaces and in public spaces
+when an individual is representing the project or its community. Examples of
+representing a project or community include using an official project e-mail
+address, posting via an official social media account, or acting as an appointed
+representative at an online or offline event. Representation of a project may be
+further defined and clarified by project maintainers.
+
+Forum Guidelines apply to the FreeCAD Forum but may also be adopted for FreeCAD social media channels.
+
+## Forum Moderator Guidelines and Responsibilities
 
 These are the key tasks and responsibilities of a moderator:
 
@@ -69,27 +80,6 @@ When debates become heated and unproductive, a moderator may issue a public remi
 ### F. Manage users
 
 In cases of repeated or severe rule-breaking, a moderator has the authority to warn, suspend, or permanently ban users from the community.
-
-## Scope
-
-This Code of Conduct applies both within project spaces and in public spaces
-when an individual is representing the project or its community. Examples of
-representing a project or community include using an official project e-mail
-address, posting via an official social media account, or acting as an appointed
-representative at an online or offline event. Representation of a project may be
-further defined and clarified by project maintainers.
-
-## Our Responsibilities
-
-Project maintainers are responsible for clarifying the standards of acceptable
-behavior and are expected to take appropriate and fair corrective action in
-response to any instances of unacceptable behavior.
-
-Project maintainers have the right and responsibility to remove, edit, or
-reject comments, commits, code, wiki edits, issues, and other contributions
-that are not aligned to this Code of Conduct, or to ban temporarily or
-permanently any contributor for other behaviors that they deem inappropriate,
-threatening, offensive, or harmful.
 
 ## Enforcement
 
