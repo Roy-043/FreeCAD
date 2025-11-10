@@ -9,7 +9,11 @@ members are expected to follow these guidelines:
 
 ### I. Be respectful and considerate
 
-Disagreements between people are to be expected and are usually a sign of healthy debate and engagement. But disagreements are no excuse for poor behavior or personal attacks. Always remember that your actions can have consequences for other community members and the project as a whole. It should be stressed that FreeCAD is a community project and that the resposibility for the FreeCAD software, documentation etc. rests on the shoulders of the whole community. Once code has been merged is collectively owned.
+Disagreements between people are to be expected and are usually a sign of healthy debate and engagement. But disagreements are no excuse for poor behavior or personal attacks. Always remember that your actions can have consequences for other community members and the project as a whole.
+
+The ideas and views of all community members, irrespective of their (professional) experience or skills, should be met with the same level respect. The insights of a novice can be as valuable as those from a senior user.
+
+It should be stressed that FreeCAD is a community project and that the resposibility for the FreeCAD software, documentation etc. rests on the shoulders of the whole community. Once code has been merged is collectively owned.
   
 ### II. Be patient and generous
 
@@ -35,7 +39,6 @@ The FreeCAD forum is governed by the Community Guidelines. But the following mor
 3. Do not repeat yourself and do not create multiple topics for the same issue or problem.
 
 4. Do not ecscalate conflicts. If conflicts arise, do not add fuel but instead de-escalate. If you think a forum memebr misbehaves or you feel injustly treated, report the problem to moderators so that they can take appropriate steps.
-
 
 ## Forum Moderator Guidelines
 
