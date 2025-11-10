@@ -51,7 +51,7 @@ address, posting via an official social media account, or acting as an appointed
 representative at an online or offline event. Representation of a project may be
 further defined and clarified by project maintainers.
 
-Forum Guidelines apply to the FreeCAD Forum but may also be adopted for FreeCAD social media channels.
+The Forum Guidelines apply to the FreeCAD Forum but may also be adopted for other FreeCAD social media channels.
 
 ## Forum Moderator Guidelines and Responsibilities
 
