@@ -7,7 +7,7 @@ backgrounds and positions. This diversity is a great strength of the project,
 but can also lead to misunderstandings. To promote a positive community all
 members are expected to follow these guidelines:
 
-### I. Be respectful and considerate
+### Be respectful and considerate
 
 Disagreements between people are to be expected and are usually a sign of healthy debate and engagement. But disagreements are no excuse for poor behavior or personal attacks. Always remember that your actions can have consequences for other community members and the project as a whole.
 
@@ -15,11 +15,11 @@ The ideas and views of all community members, irrespective of their (professiona
 
 It should be stressed that FreeCAD is a community project and that the resposibility for the FreeCAD software, documentation etc. rests on the shoulders of the whole community. Once code has been merged is collectively owned.
   
-### II. Be patient and generous
+### Be patient and generous
 
 Always take requests for help seriously. If appropriate, you can politely point out missing information, or refer to available information, but avoid aggressive or vague responses. If something seems outrageous, do not assume the worst, but ask for clarification first. Keep in mind that for many members English is a second language.
 
-### III. Be forgiving
+### Be forgiving
 
 Humans are fallible and prone to make mistakes and inexplicably change their positions at times. Don't assume that other members are acting with malicious intent. Be prepared to forgive people who make mistakes and assist each other in learning from them. Playing a blame game doesn't help anyone.
 
