@@ -7,34 +7,35 @@ backgrounds and positions. This diversity is a great strength of the project,
 but can also lead to misunderstandings. To promote a positive community all
 members are expected to follow these guidelines:
 
-### A. Be respectful and considerate
+### I. Be respectful and considerate
 
-Disagreements between people are to be
-expected and are usually a sign of healthy debate and engagement. But
-disagreements are no excuse for poor behavior or personal attacks. Always
-remember that your actions can have consequences for other community members
-and the project as a whole.
+Disagreements between people are to be expected and are usually a sign of healthy debate and engagement. But disagreements are no excuse for poor behavior or personal attacks. Always remember that your actions can have consequences for other community members and the project as a whole. It should be stressed that FreeCAD is a community project and that the resposibility for the FreeCAD software, documentation etc. rests on the shoulders of the whole community. Once code has been merged is collectively owned.
   
-### B. Be patient and generous
+### II. Be patient and generous
 
-Always take requests for help seriously. If appropriate,
-you can politely point out missing information, or refer to available information,
-but avoid aggressive or vague responses. If something seems outrageous, do not
-assume the worst, but ask for clarification first. Keep in mind that for many
-members English is a second language.
+Always take requests for help seriously. If appropriate, you can politely point out missing information, or refer to available information, but avoid aggressive or vague responses. If something seems outrageous, do not assume the worst, but ask for clarification first. Keep in mind that for many members English is a second language.
 
-### C. Be forgiving
+### III. Be forgiving
 
-Humans are fallible and prone to make mistakes and inexplicably
-change their positions at times. Don't assume that other members are acting with
-malicious intent. Be prepared to forgive people who make mistakes and assist
-each other in learning from them. Playing a blame game doesn't help anyone.
+Humans are fallible and prone to make mistakes and inexplicably change their positions at times. Don't assume that other members are acting with malicious intent. Be prepared to forgive people who make mistakes and assist each other in learning from them. Playing a blame game doesn't help anyone.
 
 ## Forum Guidelines
 
-### D.
+The FreeCAD forum is governed by the Community Guidelines. But the following more detailed guidelines also apply.
 
-### E.
+1. Do not post inappropriate content:
+    - Do not post copyrighted material unless you are the copyrightholder.
+    - Do not post spam. Messages whose sole purpose is to promote a product or website are not allowed.
+    - You can use AI to translate texts, but do not post AI generated content that adds nothing to a discussion.
+    - Do not attack other community members, including other forum users and FreeCAD developers.
+    - Do not use foul language, do not swear or insult.
+  
+2. Always be constructive. FreeCAD is not perfect and expressing criticism is of course allowed, but do so in a constructive manner. Provide additional information or test files when requested. if applicable, follow the bug reporting guidelines as published on the forum. Be patient and acccept that your problem may not be solved right away.
+
+3. Do not repeat yourself and do not create multiple topics for the same issue or problem.
+
+4. Do not ecscalate conflicts. If conflicts arise, do not add fuel but instead de-escalate. If you think a forum memebr misbehaves or you feel injustly treated, report the problem to moderators so that they can take appropriate steps.
+
 
 ## Forum Moderator Guidelines
 
