@@ -57,29 +57,12 @@ The Forum Guidelines apply to the FreeCAD Forum but may also be adopted for othe
 
 These are the key tasks and responsibilities of a moderator:
 
-### A. Enforce guidelines
-
-A moderator ensures that all participants adhere to the Community Guidelines.
-
-### B. Remove inappropriate content
-
-A moderator must remove posts, comments, or images that violate the rules. This includes off-topic material that derails the conversation.
-
-### C. Keep discussions on-topic
-
-If a conversation strays too far from its original purpose, a moderator should gently guide it back on track to keep it relevant and productive.
-
-### D. Organize content
-
-A moderator might merge duplicate discussion threads, split a single conversation into multiple topics if it becomes too broad so users can easily find what they are looking for.
-
-### E. De-escalate conflicts
-
-When debates become heated and unproductive, a moderator may issue a public reminder to remain civil, temporarily lock a thread, or warn individuals.
-
-### F. Manage users
-
-In cases of repeated or severe rule-breaking, a moderator has the authority to warn, suspend, or permanently ban users from the community.
+1. Enforce guidelines. A moderator ensures that all participants adhere to the Community Guidelines.
+2. Remove inappropriate content. A moderator must remove posts, comments, or images that violate the rules. This includes off-topic material that derails the conversation.
+3. Keep discussions on-topic. If a conversation strays too far from its original purpose, a moderator should gently guide it back on track to keep it relevant and productive.
+4. Organize content. A moderator may merge duplicate discussion threads, split a single conversation into multiple topics if it becomes too broad so users can easily find what they are looking for.
+5. De-escalate conflicts. When debates become heated and unproductive, a moderator may issue a public reminder to remain civil, temporarily lock a thread, or warn individuals.
+6. Manage users. In cases of repeated or severe rule-breaking, a moderator has the authority to warn, suspend, or permanently ban users from the community.
 
 ## Enforcement
 
