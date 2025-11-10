@@ -80,12 +80,8 @@ The Forum Guidelines apply to the FreeCAD Forum but may also be adopted for othe
 
 ## Attribution
 
-This Code of Conduct is adapted from the [Contributor Covenant][homepage], version 1.4,
-available at https://www.contributor-covenant.org/version/1/4/code-of-conduct.html
-and the [libvirt Code of Conduct][libvirtcoc], available at https://libvirt.org/governance.html.
-
-[homepage]: https://www.contributor-covenant.org
-[libvirtcoc]: https://libvirt.org/governance.html
-
-For answers to common questions about the Contributor Covenant, see
-https://www.contributor-covenant.org/faq
+This Code of Conduct is based on the following sources:
+* https://www.contributor-covenant.org/version/1/4/code-of-conduct.html
+* https://libvirt.org/governance.html
+* https://developer.blender.org/docs/handbook/communication/code_of_conduct/
+* https://github.com/FreeCAD/FreeCAD/issues/15762
