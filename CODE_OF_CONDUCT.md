@@ -42,7 +42,7 @@ The FreeCAD forum is governed by the Community Guidelines. But the following mor
 
 5. Use GitHub for discussions related to the FreeCAD source code. We use GitHub to develop the FreeCAD software and therefore coding related discussions happen there. If you want to participate in those discussions, or contribute to the software, you need to use that platform.
 
-## Forum Moderator Responsibilities
+## Moderator Responsibilities
 
 These are the key tasks and responsibilities of a moderator:
 
@@ -65,7 +65,7 @@ Further details of specific enforcement policies may be posted separately.
 
 A forum user who violate the rules of the Code of Conduct or the Forum Guidelines will be warned two times. If the user then does not correct their behavior a temporary ban will be issued. Further cases of misconduct will lead to a permanent ban. In the case of a particularly severe misbehavior, an immediate ban can be issued.
 
-Project maintainers who do not follow or enforce the Code of Conduct in good
+Project moderators who do not follow or enforce the Code of Conduct in good
 faith may face temporary or permanent repercussions as determined by other
 members of the project's leadership.
 
@@ -76,13 +76,13 @@ when an individual is representing the project or its community. Examples of
 representing a project or community include using an official project e-mail
 address, posting via an official social media account, or acting as an appointed
 representative at an online or offline event. Representation of a project may be
-further defined and clarified by project maintainers.
+further defined and clarified by project moderators.
 
 The Forum Guidelines apply to the FreeCAD Forum but may also be adopted for other FreeCAD social media channels.
 
 ## Attribution
 
-This Code of Conduct is based on the following sources:
+Text of this document is based on the following sources:
 * https://www.contributor-covenant.org/version/1/4/code-of-conduct.html
 * https://libvirt.org/governance.html
 * https://developer.blender.org/docs/handbook/communication/code_of_conduct/
