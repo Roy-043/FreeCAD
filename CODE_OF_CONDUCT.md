@@ -42,7 +42,7 @@ The FreeCAD forum is governed by the Community Guidelines. But the following mor
 
 5. Use GitHub for discussions related to the FreeCAD source code. We use GitHub to develop the FreeCAD software and therefore coding related discussions happen there. If you want to participate in those discussions, or contribute to the software, you need to use that platform.
 
-## Moderator Responsibilities
+## Moderation Guidelines
 
 These are the key tasks and responsibilities of a moderator:
 
@@ -53,7 +53,7 @@ These are the key tasks and responsibilities of a moderator:
 5. De-escalate conflicts. When debates become heated and unproductive, a moderator may issue a public reminder to remain civil, temporarily lock a thread, or warn individuals.
 6. Manage users. In cases of repeated or severe rule-breaking, a moderator has the authority to warn, suspend, or permanently ban users from the community.
 
-## Enforcement
+## Enforcement and conflict resolution
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
 reported by contacting any of the community admins or moderators at
@@ -82,7 +82,7 @@ The Forum Guidelines apply to the FreeCAD Forum but may also be adopted for othe
 
 ## Attribution
 
-Text of this document is based on the following sources:
+The text of this document is in part based on the following sources:
 * https://www.contributor-covenant.org/version/1/4/code-of-conduct.html
 * https://libvirt.org/governance.html
 * https://developer.blender.org/docs/handbook/communication/code_of_conduct/
