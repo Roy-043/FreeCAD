@@ -65,7 +65,7 @@ Further details of specific enforcement policies may be posted separately.
 
 A forum user who violate the rules of the Code of Conduct or the Forum Guidelines will be warned two times. If the user then does not correct their behavior a temporary ban will be issued. Further cases of misconduct will lead to a permanent ban. In the case of a particularly severe misbehavior, an immediate ban can be issued.
 
-Project moderators who do not follow or enforce the Code of Conduct in good
+Community moderators who do not follow or enforce the Code of Conduct in good
 faith may face temporary or permanent repercussions as determined by other
 members of the project's leadership.
 
@@ -76,7 +76,7 @@ when an individual is representing the project or its community. Examples of
 representing a project or community include using an official project e-mail
 address, posting via an official social media account, or acting as an appointed
 representative at an online or offline event. Representation of a project may be
-further defined and clarified by project moderators.
+further defined and clarified by community moderators.
 
 The Forum Guidelines apply to the FreeCAD Forum but may also be adopted for other FreeCAD social media channels.
 
