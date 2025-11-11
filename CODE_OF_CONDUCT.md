@@ -44,7 +44,7 @@ The FreeCAD forum is governed by the Community Guidelines. But the following mor
 
 These are the key tasks and responsibilities of a moderator:
 
-1. Enforce guidelines. A moderator ensures that all participants adhere to the Community Guidelines.
+1. Enforce guidelines. A moderator ensures that all participants adhere to the Community and Forum Guidelines.
 2. Remove inappropriate content. A moderator must remove posts, comments, or images that violate the rules. This includes off-topic material that derails the conversation.
 3. Keep discussions on-topic. If a conversation strays too far from its original purpose, a moderator should gently guide it back on track to keep it relevant and productive.
 4. Organize content. A moderator may merge duplicate discussion threads, split a single conversation into multiple topics if it becomes too broad so users can easily find what they are looking for.
