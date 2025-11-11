@@ -34,13 +34,11 @@ The FreeCAD forum is governed by the Community Guidelines. But the following mor
     - Do not attack other community members, including other forum users and FreeCAD developers.
     - Do not use foul language, do not swear or insult.
   
-2. Always be constructive. FreeCAD is not perfect and expressing criticism is of course allowed, but do so in a constructive manner. Provide additional information or test files when requested. if applicable, follow the bug reporting guidelines as published on the forum. Be patient and acccept that your problem may not be solved right away.
+2. Always be constructive. FreeCAD is not perfect and expressing criticism is of course allowed, but do so in a constructive manner. Provide additional information or test files when requested. If applicable, follow the bug reporting guidelines as published on the forum. Be patient and acccept that your problem may not be solved right away.
 
-3. Do not repeat yourself and do not create multiple topics for the same issue or problem.
+3. Do not ecscalate conflicts. If conflicts arise, do not add fuel but instead de-escalate. If you think a forum member misbehaves or you feel injustly treated, report the problem to moderators so that they can take appropriate steps.
 
-4. Do not ecscalate conflicts. If conflicts arise, do not add fuel but instead de-escalate. If you think a forum member misbehaves or you feel injustly treated, report the problem to moderators so that they can take appropriate steps.
-
-5. Use GitHub for discussions related to the FreeCAD source code. We use GitHub to develop the FreeCAD software and therefore coding related discussions happen there. If you want to participate in those discussions, or contribute to the software, you need to use that platform.
+4. Use GitHub for discussions related to the FreeCAD source code. We use GitHub to develop the FreeCAD software and therefore coding related discussions happen there. If you want to participate in those discussions, or contribute to the software, you need to use that platform.
 
 ## Moderation Guidelines
 
