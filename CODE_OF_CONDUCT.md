@@ -46,6 +46,6 @@ The FreeCAD forum is governed by the Community Guidelines. But the following mor
 ## 5. Conclusion
 We are committed to creating a safe, welcoming, and productive environment for all community members involved with FreeCAD. By adhering to this code of conduct, we can ensure everyone can contribute positively and thrive in our community.
 
-## Amendments
+## 6. Amendments
 This code of conduct may be amended periodically to reflect changes in community standards or operational needs. Community input will be considered when making amendments. 
 
