@@ -31,6 +31,8 @@ OpenSBP Post Processor for ShopBot Controllers, "machine" based
 
 import operator
 import math
+import re
+import textwrap
 from typing import Any, Dict
 
 import FreeCAD
@@ -38,9 +40,7 @@ import Path
 
 Path.Log.debug(f"### RELOADED {__file__}")
 import Constants
-
-from Path.Post.Processor import PostProcessor
-from Path.Post.GcodeProcessingUtils import insert_line_numbers
+from Path.Post.Processor import PostProcessor, SCOPE_MACHINE
 
 translate = FreeCAD.Qt.translate
 
@@ -135,12 +135,17 @@ class OpenSBPPost(PostProcessor):
         for prop in common_props:
             if prop["name"] == "file_extension":
                 prop["default"] = "sbp"
+            elif prop["name"] == "f_for_rapid_moves":
+                # Use G0's F by default
+                prop["default"] = True
 
             # FIXME: show but don't allow edit in UI
 
             elif prop["name"] == "supported_commands":
                 # actually, we could allow reducing this list, but not expanding it
                 prop["default"] = "\n".join(cls.GCodeSupported)
+            elif prop["name"] == "ignored_commands":
+                prop["default"] = "\n".join(cls.GCodeSuppressed)
             elif prop["name"] == "drill_cycles_to_translate":
                 prop["default"] = "\n".join(
                     Constants.GCODE_DRILL_EXTENDED + Constants.GCODE_MOVE_DRILL
@@ -158,6 +163,7 @@ class OpenSBPPost(PostProcessor):
         return [
             {
                 "name": "automatic_tool_changer",
+                "scope": SCOPE_MACHINE,
                 "type": "bool",
                 "label": translate("CAM", "Automatic Tool Changer"),
                 "default": False,
@@ -169,6 +175,7 @@ class OpenSBPPost(PostProcessor):
             },
             {
                 "name": "automatic_spindle",
+                "scope": SCOPE_MACHINE,
                 "type": "bool",
                 "label": translate("CAM", "Automatic Spindle Control"),
                 "default": False,
@@ -176,18 +183,6 @@ class OpenSBPPost(PostProcessor):
                     "CAM",
                     "Enable if machine has automatic spindle speed control. "
                     "If disabled, spindle commands will prompt for manual adjustment.",
-                ),
-            },
-            # FIXME: should be a general option
-            {
-                "name": "suppressed_commands",
-                "type": "text",
-                "label": translate("CAM", "Suppressed (tolerated) G-code Commands"),
-                "default": "\n".join(cls.GCodeSuppressed),
-                "help": translate(
-                    "CAM",
-                    "List of G-code commands tolerated but suppressed by this post-processor (one per line). "
-                    "Commands this list will be filtered out",
                 ),
             },
         ]
@@ -206,6 +201,8 @@ class OpenSBPPost(PostProcessor):
             units=units,
         )
         Path.Log.debug("OpenSBP post processor initialized.")
+
+        self._first_probe_open = True  # for probe-subroutines only once
 
         # Track current speeds for OpenSBP (separate XY and Z speeds)
         self._current_move_speed_xy = None
@@ -232,6 +229,7 @@ class OpenSBPPost(PostProcessor):
         # Override .values
 
         self.values["COMMENT_SYMBOL"] = "'"
+        self.values["TRANSLATE_DRILL_CYCLES"] = True
 
         # schema by [name]
         schema = {x["name"]: x for x in self.get_common_property_schema()}
@@ -239,16 +237,23 @@ class OpenSBPPost(PostProcessor):
         # These schema defaults are r/o: force them
         for property_name in (
             "supported_commands drill_cycles_to_translate"
-            " translate_drill_cycles output_tool_length_offset".split(" ")
+            " output_tool_length_offset"
+            " f_for_rapid_moves".split(  # FIXME: the merge logic doesn't respect our updated default
+                " "
+            )
         ):
             self.values[property_name.upper()] = schema[property_name]["default"]
 
-    def convert_command_to_gcode(self, command: Path.Command) -> str:
+        # non-schema override
+        self.values.update({"OUTPUT_DUPLICATE_COMMANDS": True})
 
-        # FIXME: should be in Processor class
-        if command.Name in self.values["SUPPRESSED_COMMANDS"].split("\n"):
-            Path.Log.debug(f"opensbp suppressed {command}")
-            return None
+    def _convert_start_section(self, section_name, sublist):
+        # need to note that we are starting a section (file), so "per section" stuff...
+        self._first_probe_open = True
+
+        super()._convert_start_section(section_name, sublist)
+
+    def convert_command_to_gcode(self, command: Path.Command) -> str:
 
         # FIXME: optional blockdelete emulation w/"if somevariable"
         if command.Annotations.get("blockdelete", False):
@@ -257,32 +262,31 @@ class OpenSBPPost(PostProcessor):
         return super().convert_command_to_gcode(command)
 
     def _convert_move(self, command):
-        # FIXME: use Path.Command world _add_line_numbers when implemented
-        gcode = super()._convert_move(command)
+        # Some gcode starts with the same command as shopbot commands
+        # and shopbot will assume they are shopbot
+        # unless they start with gcode line-numbering: Nxxxx
+        if (
+            command.Name in self.GCodeLineNumberRequired
+            # modal can omit the command, leaving a Zn... as the first parameter -> head of string
+            or command.Name[0] in self.GCodeLineNumberRequiredParameters
+        ) and "N" not in command.Parameters:
+            # Shouldn't happen if OUTPUT_LINE_NUMBERS==True
 
-        if self.values["OUTPUT_LINE_NUMBERS"]:
-            # It will be taken care of later (everything line-numbered)
+            # But, we don't know what the line-number should be, so:
+            start = self.values["LINE_NUMBER_START"]
+            params = command.Parameters()
+            params["N"] = start
+            command = Path.Command(command.Name, params)
+
+        gcode = super()._convert_move(command)
+        if gcode is None or gcode == "":
             return gcode
 
         # We have to do this in string world
         result = []
         gcode_lines = gcode.split("\n")
         for line in gcode_lines:
-            command_name, *_ = line.split(" ", 1)
-
-            if (
-                command_name in self.GCodeLineNumberRequired
-                # modal can omit the command, leaving a Zn... as the first parameter -> head of string
-                or command_name[0] in self.GCodeLineNumberRequiredParameters
-            ):
-                # Line-numbering can't work properly, the progress isn't saved anywhere after
-                # calling insert_line_numbers()
-                start = self.values["LINE_NUMBER_START"]
-                increment = self.values["LINE_INCREMENT"]
-                result.append("' LN required")
-                result.extend(insert_line_numbers(gcode.split("\n"), start, increment))
-            else:
-                result.append(line)
+            result.append(line)
 
         return "\n".join(result)
 
@@ -304,8 +308,8 @@ class OpenSBPPost(PostProcessor):
 
         params = command.Parameters
 
-        # We may be axis-modal
-        machine_state_params = self._modal_state  # FIXME self.machine_state.getState()
+        # We may be axis-modal, restore "missing" params
+        machine_state_params = self.machine_state.previous
         params.update(
             {
                 p: machine_state_params[p]
@@ -330,14 +334,13 @@ class OpenSBPPost(PostProcessor):
         RequiredState = "XYZ"
         if modal_missing := [p for p in RequiredState if machine_state_params[p] is None]:
             raise ValueError(
-                f"Arcs require a previous {''.join(modal_missing)} (from some movement) for {command}"
+                f"Arcs require a previous {''.join(modal_missing)} (from some movement) for {command}, previous machine-state = {machine_state_params}"
             )
 
         # GCODE if no dZ
 
-        if (
-            params["Z"] == machine_state_params["Z"]
-        ):  # nb: works ok if Z is omitted, and state.Z is None (never seen)
+        if params["Z"] == machine_state_params["Z"]:
+            # nb: works ok if Z is omitted, and state.Z is None (never seen)
             return super()._convert_arc_move(command)
 
         # HELIX, requires opensbp CG, command
@@ -408,7 +411,7 @@ class OpenSBPPost(PostProcessor):
 
             #
             z_distance = abs(start_position[2] - end_position[2])
-            xy_distance, total_distance = arc_length_3d(
+            xy_distance, _ = arc_length_3d(
                 center,
                 start_position,
                 end_position,
@@ -429,7 +432,7 @@ class OpenSBPPost(PostProcessor):
             # format_parameter is going to *60 so we have to /60
             return f"VS,{self.format_parameter('F', vs_speeds[0]/60)},{self.format_parameter('F', vs_speeds[1]/60)}"
 
-        last_position = self._modal_state  # FIXME: self.machine_state.getState()
+        last_position = self.machine_state.previous
         speed_command = calculate_arc_speed(command.Name, params, last_position=last_position)
         if speed_command:
             output.append(speed_command)
@@ -520,14 +523,109 @@ class OpenSBPPost(PostProcessor):
         else:
             return super()._convert_program_control(command)
 
-    def _optimize_gcode(self, header_lines, gcode_lines) -> str:
+    def _quote(self, string):
+        """Return a string that is safe for double-quotes (for opensbp)"""
+        # very conservative: only alpha-numeric and /-_.
+        return re.sub(r"[^A-Za-z0-9/_ .-]", "", string)
+
+    def _convert_probe_open(self, command):
+        """We need to setup for this probe-sequence,
+        provide subroutines for this/other probe-sequences.
+        The command should be a comment, and is already handled by
+        a _convert_comment().
+        But, has an annotation for the file-name from the Probe Operation
+        """
+
+        # we allow "/", "../", etc., in the filename
+        # but not things like "c:".
+        filename = command.Annotations["probe_open"]
+        if "." not in filename:
+            # default .txt (really "space delimited values")
+            filename += ".txt"
+        filename = self._quote(filename)
+
+        rez = []
+
+        # only insert subroutines once per section FIXME: need to be told when starting a section
+        if self._first_probe_open:
+            self._first_probe_open = False
+            rez.extend(textwrap.dedent("""\
+                    ' Loads my-variables, notably my_ZzeroInput
+                    C#,90
+                    ' PROBE SUBROUTINE
+                    GOTO SkipProbeSubRoutines
+                    CaptureZPos:
+                      ' for g38.2 probe, write the data on probe-contact
+                      ' and set flag for didn't-fail
+                      ' xyzab
+                      WRITE #1; %(1); " "; %(2); " "; %(3); " "; %(4); " "; %(5)
+                      &hit = 1
+                      RETURN
+                    FailedToTouch:
+                      ' for g38.2 probe, when
+                      ' failed to trigger w/in movement
+                      MSGBOX(Failed to touch...Exiting,16,Probe Failed) # fixme: which job/op label, and file?
+                      END
+                    SkipProbeSubRoutines:
+                    ' ------
+                """).rstrip().split("\n"))
+
+        rez.extend(
+            [
+                # we already handled the probe-open comment
+                f'OPEN "{filename}" FOR OUTPUT as #1',
+            ]
+        )
+
+        return "\n".join(rez)
+
+    def _convert_probe_close(self, command):
+        return textwrap.dedent("""\
+            '(PROBECLOSE)
+            'Clear probe-switch-trigger
+            ON INPUT(&my_ZzeroInput, 1)
+            CLOSE #1
+        """).rstrip()
+
+    def _convert_probe(self, command):
+        """
+        Converts a probe command (G38.2) to gcode.
+        _convert_probe_open(command) was already called to start the sequence
+        Probe.opExecute generated various move commands, and are handled as normal.
+        _convert_probe_close(command) will-be called to end the sequence
+        """
+
+        # We are being strict here, Z motion only
+        excess = set(command.Parameters.keys()) - set(list("ZFN"))
+        if len(excess) > 0:
+            raise Exception(f"A probing move (G38.2) must only have Z, F, and N, saw {command}")
+        required = {p: v for p, v in command.Parameters.items() if p in "ZF"}
+        if self.machine_state.F is not None:
+            required["F"] = self.machine_state.F
+        if len(required) != 2:
+            raise Exception(f"A probing move (G38.2) must have a Z and F, only saw: {command}")
+        if len(command.Parameters) > 2 and "N" not in command.Parameters:
+            raise Exception(f"A probing move (G38.2) must only have Z, F, and N, saw {command}")
+
+        # G1, we aren't jogging, we are doing a slow, deliberate move, i.e. ~"feed".
+        probe_movement = self._convert_move(Path.Command("G1", required))
+
+        # &hit is set to 1 if the touch happens (see subroutine in _convert_probe_open)
+        rez = textwrap.dedent(f"""\
+            &hit = 0
+            ON INPUT(&my_ZzeroInput, 1) GOSUB CaptureZPos
+            {probe_movement}
+            IF &hit = 0 THEN GOTO FailedToTouch
+        """).rstrip()
+
+        return rez
+
+    def _optimize_gcode(self, gcode_lines) -> str:
         # There may be opensbp in the stream
         # so, you can't know the state for modal and axis-modal
         # FIXME: this override goes away when Processor's does
 
-        disable = "OUTPUT_DUPLICATE_COMMANDS FILTER_INEFFICIENT_MOVES OUTPUT_LINE_NUMBERS".split(
-            " "
-        )
+        disable = "FILTER_INEFFICIENT_MOVES".split(" ")
         was = {k: self.values[k] for k in disable}
 
         for k in disable:
@@ -535,7 +633,7 @@ class OpenSBPPost(PostProcessor):
         self.values["OUTPUT_DUPLICATE_COMMANDS"] = True
 
         try:
-            return super()._optimize_gcode(header_lines, gcode_lines)
+            return super()._optimize_gcode(gcode_lines)
         finally:
             for k in disable:
                 self.values[k] = was[k]

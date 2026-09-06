@@ -29,7 +29,7 @@
 
 from typing import Any, Dict
 
-from Path.Post.Processor import PostProcessor
+from Path.Post.Processor import PostProcessor, SCOPE_JOB
 
 import Path
 import FreeCAD
@@ -88,8 +88,8 @@ class Linuxcnc(PostProcessor):
         return [
             {
                 "name": "blend_mode",
+                "scope": SCOPE_JOB,
                 "type": "choice",
-                "runtime": True,
                 "label": translate("CAM", "Path Blending Mode"),
                 "default": "BLEND",
                 "choices": ["EXACT_PATH", "EXACT_STOP", "BLEND"],
@@ -101,8 +101,8 @@ class Linuxcnc(PostProcessor):
             },
             {
                 "name": "blend_tolerance",
+                "scope": SCOPE_JOB,
                 "type": "float",
-                "runtime": True,
                 "label": translate("CAM", "Blend Tolerance"),
                 "default": 0.0,
                 "min": 0.0,
@@ -161,10 +161,18 @@ class Linuxcnc(PostProcessor):
             values["BLEND_MODE"] = "BLEND"
             values["BLEND_TOLERANCE"] = 0.0
 
-    def _collect_preamble_lines(self) -> list:
+    def _expand_prefix(self, postables):
         """inject blend command"""
-        blend = self._get_blend_command().split("\n")
-        return [x for x in super()._collect_preamble_lines() + blend if x]
+        blend = self._get_blend_command()
+
+        preamble = self.values["PREAMBLE"] or ""
+        # Separate the blend command from whatever the preamble ends with,
+        # otherwise "... G80 G90" + "G64 P0.0010" runs together as "G90G64".
+        if preamble and not preamble[-1].isspace():
+            preamble += " "
+        self.values["PREAMBLE"] = preamble + blend
+
+        super()._expand_prefix(postables)
 
     def _get_blend_command(self) -> str:
         """Generate the path blending G-code command based on current settings.
