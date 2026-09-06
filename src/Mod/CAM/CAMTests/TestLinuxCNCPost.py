@@ -26,8 +26,13 @@
 import Path
 from CAMTests import PathTestUtils
 from CAMTests import PostTestMocks
-from Path.Post.Processor import PostProcessorFactory
-from Machine.models.machine import Machine, Toolhead, ToolheadType
+from Path.Post.Processor import (
+    PostProcessorFactory,
+    SCOPE_JOB,
+    SCOPE_MACHINE,
+    properties_in_scope,
+)
+from Machine.models.machine import Machine, Toolhead, ToolheadType, OutputUnits
 
 Path.Log.setLevel(Path.Log.Level.DEBUG, Path.Log.thisModule())
 Path.Log.trackModule(Path.Log.thisModule())
@@ -88,6 +93,7 @@ class TestLinuxCNCPost(PathTestUtils.PathTestBase):
         # Create a machine configuration for each test
         self.post._machine = Machine.create_3axis_config()
         self.post._machine.name = "Test LinuxCNC Machine"
+        self.post.apply_configuration_bundle()
         # Add a default toolhead (required by export2)
         toolhead = Toolhead(
             name="Default Toolhead",
@@ -114,6 +120,26 @@ class TestLinuxCNCPost(PathTestUtils.PathTestBase):
         idx = lines.index("G21")  # throws IndexError if unexpectedly missing
         preamble = "\n".join(lines[:idx])
         return gcode, preamble
+
+    def test_blend_properties_are_job_scoped(self):
+        """Blend settings must be configurable in the machine editor.
+
+        They were previously "runtime": True, which made them Overview-tab
+        only and left no way to give a machine a default blending mode.
+        "job" scope keeps the per-run override while restoring the
+        machine-level default.
+        """
+        schema = self.post.__class__.get_full_property_schema()
+        by_name = {prop["name"]: prop for prop in schema}
+
+        for name in ("blend_mode", "blend_tolerance"):
+            with self.subTest(prop=name):
+                self.assertEqual(by_name[name].get("scope"), SCOPE_JOB)
+
+        # Scope "job" is what the machine editor renders alongside "machine".
+        editable = {p["name"] for p in properties_in_scope(schema, SCOPE_MACHINE, SCOPE_JOB)}
+        self.assertIn("blend_mode", editable)
+        self.assertIn("blend_tolerance", editable)
 
     def test_blend_mode_exact_path(self):
         """Test EXACT_PATH blend mode outputs G61."""
@@ -158,7 +184,7 @@ class TestLinuxCNCPost(PathTestUtils.PathTestBase):
         # G64 should be in the preamble (without P parameter)
         lines = gcode.splitlines()
         has_g64 = any("G64" in line and "P" not in line for line in lines)
-        self.assertTrue(has_g64, "Expected G64 without P parameter")
+        self.assertTrue(has_g64, f"Expected G64 without P parameter in\n{gcode}")
 
     def test_blend_mode_blend_with_tolerance(self):
         """Test BLEND mode with tolerance outputs G64 P<tolerance>."""
@@ -225,6 +251,50 @@ class TestLinuxCNCPost(PathTestUtils.PathTestBase):
         gcode, preamble = self._gcode_and_preamble()
 
         self.assertIn("G64", preamble, "G64 command not found preamble: full gcode\n{gcode}")
+
+    def test_blend_command_separated_from_preamble(self):
+        """The blend command must not run into the last word of the preamble.
+
+        _expand_prefix() appends the blend command to PREAMBLE. Without a
+        separator the LinuxCNC default preamble came out as
+        "G17 G54 G40 G49 G80 G90G64 P0.0010", i.e. neither a G90 nor a G64.
+        """
+        self.profile_op.Path = Path.Path([])
+        self.post._machine.postprocessor_properties["blend_mode"] = "BLEND"
+        self.post._machine.postprocessor_properties["blend_tolerance"] = 0.001
+        self.post._machine.output.comments.enabled = False
+        self.post._machine.output.output_header = False
+
+        gcode, preamble = self._gcode_and_preamble()
+
+        self.assertIn(
+            "G17 G54 G40 G49 G80 G90 G64 P0.0010",
+            preamble,
+            f"Blend command should be a separate word, in\n{gcode}",
+        )
+
+    def test_blend_command_separator_cases(self):
+        """_expand_prefix() only adds a separator when one is missing.
+
+        An empty (or unset) preamble must not gain a leading space, and a
+        preamble that already ends in a newline must keep the blend command on
+        its own line.
+        """
+        cases = [
+            ("G17 G54 G40 G49 G80 G90", "G17 G54 G40 G49 G80 G90 G64 P0.0010"),
+            ("G17 G90\n", "G17 G90\nG64 P0.0010"),
+            ("G17 G90 ", "G17 G90 G64 P0.0010"),
+            ("", "G64 P0.0010"),
+            (None, "G64 P0.0010"),
+        ]
+
+        for preamble, expected in cases:
+            with self.subTest(preamble=preamble):
+                self.post.values["BLEND_MODE"] = "BLEND"
+                self.post.values["BLEND_TOLERANCE"] = 0.001
+                self.post.values["PREAMBLE"] = preamble
+                self.post._expand_prefix([])
+                self.assertEqual(self.post.values["PREAMBLE"], expected)
 
     def test_rigid_tapping_g84_basic(self):
         """
@@ -375,9 +445,10 @@ class TestLinuxCNCPost(PathTestUtils.PathTestBase):
             AFTER:  G33.1 K0.0591 Z-0.3937
         """
         # Setup - set imperial units
-        from Machine.models.machine import OutputUnits
 
         self.post._machine.output.units = OutputUnits.IMPERIAL
+        # Reapply to get the above effective
+        self.post.apply_configuration_bundle()
 
         command = Path.Command("G84", {"Z": -10.0, "F": 1.5})
         command.Annotations = {"rigid": "True", "operation": "tapping"}
@@ -428,7 +499,6 @@ class TestLinuxCNCPost(PathTestUtils.PathTestBase):
         command.Annotations = {"rigid": "True", "operation": "tapping"}
 
         # Execute
-        self.post.apply_configuration_bundle()
         result = self.post._convert_drill_cycle(command)
 
         # Verify - should not contain G33.1 (fallback to parent)

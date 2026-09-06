@@ -28,11 +28,23 @@ import FreeCADGui.Selection as GuiSelection
 import Materials
 import PartDesignGui
 import PathApp
+from PySide import (
+    __version__ as pyside_version,
+    __version_info__ as pyside_version_info,
+    QtCore,
+    QtGui,
+    QtNetwork,
+    QtSvg,
+    QtSvgWidgets,
+    QtUiTools,
+    QtWebEngineWidgets,
+    QtWidgets,
+)
 import QtUnitGui
-import Sandbox
 import SpreadsheetGui
+import Sketcher
 import TechDrawGui
-from FreeCAD import DocumentObject
+from FreeCAD import DocumentObject, ParameterGrp
 from FreeCAD.Base import (
     Axis,
     BoundBox,
@@ -42,6 +54,7 @@ from FreeCAD.Base import (
     ProgressIndicator,
     Quantity,
     Rotation,
+    Unit,
     Vector,
 )
 import Part
@@ -62,7 +75,7 @@ class ParameterObserver:
 
     def onChange(
         self,
-        group: FreeCAD._ParameterGrp,
+        group: ParameterGrp,
         param_type: str,
         name: str,
         value: str,
@@ -76,7 +89,7 @@ class ParameterManagerObserver:
 
     def slotParamChanged(
         self,
-        group: FreeCAD._ParameterGrp,
+        group: ParameterGrp,
         param_type: str,
         name: str,
         value: str,
@@ -102,13 +115,41 @@ def exercise(
     document = FreeCAD.activeDocument()
     active_document = FreeCAD.ActiveDocument
     documents = FreeCAD.listDocuments()
-    part_feature = cast(FreeCAD.Document, object()).addObject("Part::Feature", "Shape")
+    typed_document = cast(FreeCAD.Document, object())
+    default_part_feature = typed_document.addObject("Part::Feature")
+    assert_type(default_part_feature, Part.Feature)
+    part_feature = typed_document.addObject("Part::Feature", "Shape")
+    assert_type(part_feature, Part.Feature)
+    python_feature = typed_document.addObject("Part::FeaturePython", "PythonShape")
+    assert_type(python_feature, Part.Feature)
+    part_2d_object = typed_document.addObject("Part::Part2DObjectPython", "DraftObject")
+    assert_type(part_2d_object, Part.Part2DObject)
+    sketch_object = typed_document.addObject("Sketcher::SketchObject", "Sketch")
+    assert_type(sketch_object, Sketcher.SketchObject)
+    dynamic_object_type = cast(str, "SomeWorkbench::Object")
+    unknown_document_object = typed_document.addObject(dynamic_object_type)
+    assert_type(unknown_document_object, FreeCAD.DocumentObject)
     copied_object = cast(FreeCAD.Document, object()).copyObject(obj, True)
     transaction = FreeCAD.getActiveTransaction()
     console_status = Console.GetStatus("Console", "Log")
     console_observers = Console.GetObservers()
     gui_up = FreeCAD.GuiUp
     parsed_quantity = Units.parseQuantity("10 mm")
+    quantity_format: dict[str, int | str] = parsed_quantity.Format
+    unit = Unit(1, 0, 0, 0, 0, 0, 0, 0)
+    assert_type(Unit(1, 0), Unit)
+    unit_signature: tuple[int, ...] = unit.Signature
+    rotation_axis: Vector = rotation.Axis
+    raw_rotation_axis: Vector = rotation.RawAxis
+    placement_base: Vector = placement.Base
+    placement_rotation: Rotation = placement.Rotation
+    placement_matrix: Matrix = placement.Matrix
+    placement.Base = (0, 0, 0)
+    placement.Rotation = (0, 0, 0, 1)
+    rotation.Axis = (0, 0, 1)
+    matrix_values: tuple[float, ...] = matrix.A
+    assert_type(shape.CompSolids, list[Part.CompSolid])
+    assert_type(shape.Compounds, list[Part.Compound])
     schema = Units.getSchema()
     schema_names = Units.listSchemas()
     schema_description = Units.listSchemas(schema)
@@ -151,8 +192,17 @@ def exercise(
     resolve_mode: GuiSelection.ResolveMode = GuiSelection.ResolveMode.NoResolve
     selection_style_enum: GuiSelection.SelectionStyle = GuiSelection.SelectionStyle.NormalSelection
     main_window = cast(FreeCADGui._MainWindow, object())
+    view_provider = cast(FreeCADGui.ViewProvider, object())
+    view_provider.addProperty(
+        "App::PropertyEnumeration",
+        "Mode",
+        enum_vals=["First", "Second"],
+    )
+    main_window.statusBar()
+    main_window.findChildren(FreeCADGui._MainWindow)
     mdi_view = cast(FreeCADGui._MDIView, object())
     task_dialog = cast(FreeCADGui._TaskDialog, object())
+    split_view = cast(FreeCADGui._AbstractSplitView, object())
     view = cast(FreeCADGui._View3DInventor, object())
     viewer = cast(FreeCADGui._View3DInventorViewer, object())
     resource = cast(FreeCADGui._PyResource, object())
@@ -161,6 +211,26 @@ def exercise(
     material = cast(Materials.Material, object())
     path_command = cast(PathApp.Command, object())
     part_design_view_provider = cast(PartDesignGui.ViewProvider, object())
+    assert_type(part_design_view_provider.Object, FreeCAD.DocumentObject)
+    assert_type(Sketcher.Constraint("Distance", 0, 1.0), Sketcher.Constraint)
+    assert_type(
+        Sketcher.Constraint("Distance", 0, 1.0, True, False),
+        Sketcher.Constraint,
+    )
+    assert_type(
+        Sketcher.Constraint("Text", [0, 1], "label", "Sans"),
+        Sketcher.Constraint,
+    )
+    sketch = cast(Sketcher.SketchObject, object())
+    assert_type(sketch.Geometry, list[Part.Geometry])
+    assert_type(sketch.Constraints, list[Sketcher.Constraint])
+    sketch.setVirtualSpace(0, True)
+    sketch.setVirtualSpace((0, 1), False)
+    line_segment = Part.LineSegment(vector, vector)
+    assert_type(Part.LineSegment(line_segment, 0.0, 1.0), Part.LineSegment)
+    circle_from_vectors = Part.Circle(vector, vector, 1.0)
+    assert_type(Part.Arc(circle_from_vectors, 0.0, 1.0), Part.Arc)
+    QtCore.QTimer.singleShot(0, lambda: None)
     selection_filter = GuiSelection.Filter("SELECT Part::Feature")
     preselection = GuiSelection.getPreselection()
     selection = GuiSelection.getSelection()
@@ -169,7 +239,6 @@ def exercise(
     selection_ex = GuiSelection.getSelectionEx()
     selection_object = GuiSelection.getSelectionObject("Document", "Object", "Edge1")
     stacked_selection = GuiSelection.getSelectionFromStack()
-    protector = cast(Sandbox._DocumentProtector, object())
     unit_test = cast(QtUnitGui._UnitTest, object())
     sheet_view = cast(SpreadsheetGui._SheetView, object())
     page_view = cast(TechDrawGui._MDIViewPage, object())
@@ -339,13 +408,13 @@ def exercise(
     ui_loader.addPluginPath("/tmp")
     ui_loader.setLanguageChangeEnabled(True)
     ui_loader.setWorkingDirectory("/tmp")
-    assert_type(child_parameters, FreeCAD._ParameterGrp)
+    assert_type(child_parameters, ParameterGrp)
     assert_type(parameters.GetGroupName(), str)
     assert_type(parameters.GetGroups(), list[str])
     assert_type(parameters.HasGroup("Preferences"), bool)
     assert_type(parameters.RenameGroup("old", "new"), bool)
-    assert_type(parameters.Manager(), FreeCAD._ParameterGrp | None)
-    assert_type(parameters.Parent(), FreeCAD._ParameterGrp | None)
+    assert_type(parameters.Manager(), ParameterGrp | None)
+    assert_type(parameters.Parent(), ParameterGrp | None)
     assert_type(parameters.IsEmpty(), bool)
     assert_type(parameters.GetBool("flag", 0), bool)
     assert_type(parameters.GetBools(), list[str])
@@ -361,7 +430,6 @@ def exercise(
     assert_type(console_observers, list[str])
     assert_type(gui_up, int)
     assert_type(active_document, FreeCAD.Document | None)
-    assert_type(part_feature, Part.Feature)
     assert_type(part_feature.Shape, Part.Shape)
     part_feature.Shape = shape
     assert_type(copied_object, FreeCAD.DocumentObject)
@@ -456,6 +524,8 @@ def exercise(
     assert_type(main_window.getActiveWindow(), FreeCADGui._MDIView | None)
     assert_type(mdi_view.undoActions(), list[str])
     assert_type(mdi_view.sendMessage("ViewFit"), bool)
+    assert_type(len(split_view), int)
+    assert_type(split_view[0], FreeCADGui._View3DInventorViewer)
     assert_type(
         resource.value("objectName", "propertyName"),
         str | int | float | bool | list[str] | None,
@@ -501,7 +571,6 @@ def exercise(
     assert_type(viewer.getPickRadius(), float)
     assert_type(viewer.isRedirectedToSceneGraph(), bool)
     assert_type(viewer.isEnabledNaviCube(), bool)
-    protector.recompute()
     unit_test.getUnitTest()
     unit_test.clearErrorList()
     unit_test.insertError("failure", "details")
@@ -561,7 +630,6 @@ def exercise(
     reveal_type(resource)
     reveal_type(selection_filter)
     reveal_type(selection_object)
-    reveal_type(protector)
     reveal_type(unit_test)
     reveal_type(sheet_view)
     reveal_type(page_view)

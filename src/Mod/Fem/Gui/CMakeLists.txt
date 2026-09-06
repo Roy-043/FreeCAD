@@ -183,7 +183,11 @@ set(Fem_TR_QRC ${CMAKE_CURRENT_BINARY_DIR}/Resources/Fem_translation.qrc)
 qt_find_and_add_translation(QM_SRCS "Resources/translations/*_*.ts"
     ${CMAKE_CURRENT_BINARY_DIR}/Resources/translations)
 qt_create_resource_file(${Fem_TR_QRC} ${QM_SRCS})
-qt_add_resources(FemResource_SRCS Resources/Fem.qrc ${Fem_TR_QRC})
+qt_add_resources(FemResource_SRCS
+    Resources/Fem.qrc
+    ${Fem_TR_QRC}
+    OPTIONS ${FREECAD_RCC_OPTIONS}
+)
 SOURCE_GROUP("Resources" FILES ${FemResource_SRCS})
 
 SET(FemGui_SRCS_ViewProvider
@@ -413,9 +417,7 @@ if (MSVC)
     target_compile_definitions(FemGui PRIVATE WIN32_LEAN_AND_MEAN)
 endif()
 
-if (FREECAD_WARN_ERROR)
-    target_compile_warn_error(FemGui)
-endif()
+target_compile_warn_error(FemGui)
 
 fc_copy_sources(FemGui "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_DATADIR}/Mod/Fem" ${FemGuiIcon_SVG})
 fc_copy_sources(FemGui "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_DATADIR}/Mod/Fem" ${FemGuiSymbol_IV})
