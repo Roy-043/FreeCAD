@@ -106,7 +106,6 @@
         <file>icons/BIM_DimensionHorizontal.svg</file>
         <file>icons/BIM_DimensionVertical.svg</file>
         <file>icons/BIM_Door.svg</file>
-        <file>icons/BIM_ExtrudeFace.svg</file>
         <file>icons/BIM_Glue.svg</file>
         <file>icons/BIM_Hatch.svg</file>
         <file>icons/BIM_Help.svg</file>
@@ -137,6 +136,12 @@
         <file>icons/BIM_Tutorial.svg</file>
         <file>icons/BIM_Unclone.svg</file>
         <file>icons/BIM_Views.svg</file>
+        <file>icons/BIM_EditWallJoint.svg</file>
+        <file>icons/BIM_Join_Butt.svg</file>
+        <file>icons/BIM_Join_Junction.svg</file>
+        <file>icons/BIM_Join_Miter.svg</file>
+        <file>icons/BIM_Join_Tee.svg</file>
+        <file>icons/BIM_Unjoin.svg</file>
         <file>icons/BIM_WPView.svg</file>
         <file>icons/BIM_Welcome.svg</file>
         <file>icons/BIM_Windows.svg</file>
@@ -216,8 +221,6 @@
         <file>translations/Arch_ta.qm</file>
         <file>translations/Arch_ga-IE.qm</file>
         <file>translations/Arch_sv.qm</file>
-        <file>translations/Arch_lo.qm</file>
-        <file>translations/Arch_he.qm</file>
         <file>ui/ArchMaterial.ui</file>
         <file>ui/ArchMultiMaterial.ui</file>
         <file>ui/ArchNest.ui</file>

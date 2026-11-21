@@ -1,28 +1,33 @@
 # SPDX-License-Identifier: LGPL-2.1-or-later
-# SPDX-FileCopyrightText: 2013 Yorik van Havre
-# SPDX-FileNotice: Part of the FreeCAD project.
 
-################################################################################
-#                                                                              #
-#   FreeCAD is free software: you can redistribute it and/or modify            #
-#   it under the terms of the GNU Lesser General Public License as             #
-#   published by the Free Software Foundation, either version 2.1              #
-#   of the License, or (at your option) any later version.                     #
-#                                                                              #
-#   FreeCAD is distributed in the hope that it will be useful,                 #
-#   but WITHOUT ANY WARRANTY; without even the implied warranty                #
-#   of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.                    #
-#   See the GNU Lesser General Public License for more details.                #
-#                                                                              #
-#   You should have received a copy of the GNU Lesser General Public           #
-#   License along with FreeCAD. If not, see https://www.gnu.org/licenses       #
-#                                                                              #
-################################################################################
+# ***************************************************************************
+# *                                                                         *
+# *   Copyright (c) 2013 Yorik van Havre <yorik@uncreated.net>              *
+# *                                                                         *
+# *   This file is part of FreeCAD.                                         *
+# *                                                                         *
+# *   FreeCAD is free software: you can redistribute it and/or modify it    *
+# *   under the terms of the GNU Lesser General Public License as           *
+# *   published by the Free Software Foundation, either version 2.1 of the  *
+# *   License, or (at your option) any later version.                       *
+# *                                                                         *
+# *   FreeCAD is distributed in the hope that it will be useful, but        *
+# *   WITHOUT ANY WARRANTY; without even the implied warranty of            *
+# *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU      *
+# *   Lesser General Public License for more details.                       *
+# *                                                                         *
+# *   You should have received a copy of the GNU Lesser General Public      *
+# *   License along with FreeCAD. If not, see                               *
+# *   <https://www.gnu.org/licenses/>.                                      *
+# *                                                                         *
+# ***************************************************************************
 
 # Unit tests for the Arch wall module
 
 import os
+import tempfile
 import Arch
+import ArchWallEndCondition
 import Draft
 import Part
 import FreeCAD as App
@@ -35,28 +40,9 @@ class TestArchWall(TestArchBase.TestArchBase):
         operation = "Checking Arch Wall..."
         self.printTestMessage(operation)
 
-        l = Draft.make_line(App.Vector(0, 0, 0), App.Vector(-2, 0, 0))
+        l = Draft.makeLine(App.Vector(0, 0, 0), App.Vector(-2, 0, 0))
         w = Arch.makeWall(l)
         self.assertTrue(w, "Arch Wall failed")
-
-    def test_wall_from_external_defining_sketch_geometry(self):
-        operation = "Checking Arch Wall from external defining sketch geometry..."
-        self.printTestMessage(operation)
-
-        source = self.document.addObject("Sketcher::SketchObject", "SourceSketch")
-        source.addGeometry(Part.LineSegment(App.Vector(0, 0, 0), App.Vector(1000, 0, 0)))
-        target = self.document.addObject("Sketcher::SketchObject", "TargetSketch")
-        self.document.recompute()
-
-        target.addExternal(source.Name, "Edge1", True)
-        wall = Arch.makeWall(target, width=100, height=500)
-        self.document.recompute()
-
-        self.assertGreater(
-            wall.Shape.Volume,
-            0,
-            "Arch Wall should use external defining sketch geometry",
-        )
 
     def testWallMultiMatAlign(self):
         operation = "Checking Arch Wall with MultiMaterial and 3 alignments..."
@@ -74,7 +60,7 @@ class TestArchWall(TestArchBase.TestArchBase):
             App.Vector(2000, 1000, 0),
         ]
         # wall based on wire:
-        wire = Draft.make_wire(pts)
+        wire = Draft.makeWire(pts)
         wallWire = Arch.makeWall(wire)
         wallWire.Material = matMulti
         # wall based on sketch:
@@ -204,8 +190,8 @@ class TestArchWall(TestArchBase.TestArchBase):
         operation = "Testing joinWalls function"
         self.printTestMessage(operation)
 
-        base_line1 = Draft.make_line(App.Vector(0, 0, 0), App.Vector(5000, 0, 0))
-        base_line2 = Draft.make_line(App.Vector(5000, 0, 0), App.Vector(5000, 3000, 0))
+        base_line1 = Draft.makeLine(App.Vector(0, 0, 0), App.Vector(5000, 0, 0))
+        base_line2 = Draft.makeLine(App.Vector(5000, 0, 0), App.Vector(5000, 3000, 0))
         wall1 = Arch.makeWall(base_line1, width=200, height=3000)
         wall2 = Arch.makeWall(base_line2, width=200, height=3000)
         joined_wall = Arch.joinWalls([wall1, wall2])
@@ -219,7 +205,7 @@ class TestArchWall(TestArchBase.TestArchBase):
         self.printTestMessage("Testing removal of a wall's base component...")
 
         # 1. Arrange: Create a wall with a base
-        line = Draft.make_line(App.Vector(0, 0, 0), App.Vector(2000, 0, 0))
+        line = Draft.makeLine(App.Vector(0, 0, 0), App.Vector(2000, 0, 0))
         # Ensure the base object's shape is computed, making the wall debasable.
         line.recompute()
         wall = Arch.makeWall(line)
@@ -240,7 +226,7 @@ class TestArchWall(TestArchBase.TestArchBase):
     def test_is_debasable_with_valid_line_base(self):
         """Tests that a wall based on a single Draft.Line is debasable."""
         self.printTestMessage("Checking is_debasable with Draft.Line...")
-        line = Draft.make_line(App.Vector(0, 0, 0), App.Vector(1000, 0, 0))
+        line = Draft.makeLine(App.Vector(0, 0, 0), App.Vector(1000, 0, 0))
         line.recompute()
         wall = Arch.makeWall(line)
         self.document.recompute()
@@ -258,7 +244,7 @@ class TestArchWall(TestArchBase.TestArchBase):
     def test_is_debasable_with_multi_edge_base(self):
         """Tests that a wall based on a multi-segment wire is not debasable."""
         self.printTestMessage("Checking is_debasable with multi-segment Wire...")
-        wire = Draft.make_wire(
+        wire = Draft.makeWire(
             [App.Vector(0, 0, 0), App.Vector(1000, 0, 0), App.Vector(1000, 1000, 0)]
         )
         wall = Arch.makeWall(wire)
@@ -290,7 +276,7 @@ class TestArchWall(TestArchBase.TestArchBase):
 
         # 1. Arrange: Create a rotated and translated line, and a wall from it.
         pl = App.Placement(App.Vector(1000, 500, 200), App.Rotation(App.Vector(0, 0, 1), 45))
-        line = Draft.make_line(App.Vector(0, 0, 0), App.Vector(2000, 0, 0))
+        line = Draft.makeLine(App.Vector(0, 0, 0), App.Vector(2000, 0, 0))
         line.Placement = pl
         line.recompute()  # Use object-level recompute
 
@@ -465,6 +451,364 @@ class TestArchWall(TestArchBase.TestArchBase):
             msg="Placement.Rotation was not updated correctly.",
         )
 
+    def test_based_wall_stretch_api_debases_straight_wall(self):
+        """Straight line base walls should join the endpoint-editing API."""
+        self.printTestMessage("Checking based wall stretch API on straight base...")
+
+        base = Draft.makeLine(App.Vector(100, 200, 0), App.Vector(2100, 200, 0))
+        wall = Arch.makeWall(base, width=200, height=1500)
+        self.document.recompute()
+
+        wall.Proxy.set_from_endpoints(wall, [App.Vector(0, 0, 0), App.Vector(4000, 0, 0)])
+        self.document.recompute()
+
+        self.assertIsNone(wall.Base, "Straight base wall should debase on first endpoint edit.")
+        self.assertAlmostEqual(wall.Length.Value, 4000.0, delta=1e-6)
+        self.assertTrue(wall.Placement.Base.isEqual(App.Vector(2000, 0, 0), 1e-6))
+
+    def test_based_wall_stretch_rejects_coincident_endpoints_without_mutation(self):
+        """Invalid endpoint edits must not debase or otherwise change a wall."""
+        base = Draft.makeLine(App.Vector(100, 200, 0), App.Vector(2100, 200, 0))
+        wall = Arch.makeWall(base, width=200, height=1500)
+        self.document.recompute()
+        original_base = wall.Base
+        original_length = wall.Length.Value
+        original_placement = wall.Placement.copy()
+
+        with self.assertRaises(ValueError):
+            wall.Proxy.set_from_endpoints(wall, [App.Vector(0, 0, 0), App.Vector(0, 0, 0)])
+
+        self.assertIs(wall.Base, original_base)
+        self.assertAlmostEqual(wall.Length.Value, original_length, delta=1e-6)
+        self.assertTrue(wall.Placement.Base.isEqual(original_placement.Base, 1e-6))
+
+    def test_get_global_baseline_for_based_wall(self):
+        """Tests that get_global_baseline returns based-wall geometry."""
+        self.printTestMessage("Checking get_global_baseline for based walls...")
+
+        line = Draft.makeLine(App.Vector(100, 200, 0), App.Vector(2100, 200, 0))
+        self.document.recompute()
+        wall = Arch.makeWall(line, width=200, height=1500)
+        self.document.recompute()
+
+        baseline = wall.Proxy.get_global_baseline(wall)
+        self.assertIsNotNone(baseline, "Based wall baseline should not be None.")
+        self.assertTrue(baseline.normal.isEqual(App.Vector(0, 0, 1), 1e-6))
+
+        expected_start = line.Start
+        expected_end = line.End
+        self.assertTrue(
+            baseline.start_point.isEqual(expected_start, 1e-6),
+            "Baseline start point does not match the base shape.",
+        )
+        self.assertTrue(
+            baseline.end_point.isEqual(expected_end, 1e-6),
+            "Baseline end point does not match the base shape.",
+        )
+
+    def test_get_global_baseline_preserves_provider_orientation(self):
+        """Draft lines and sketches define stable Start/End semantics."""
+        line = Draft.makeLine(App.Vector(1000, 0, 0), App.Vector(0, 0, 0))
+        wall_from_line = Arch.makeWall(line, width=200, height=1500)
+
+        sketch = self.document.addObject("Sketcher::SketchObject", "ReversedWallSketch")
+        sketch.addGeometry(Part.LineSegment(App.Vector(1000, 200, 0), App.Vector(0, 200, 0)))
+        wall_from_sketch = Arch.makeWall(sketch, width=200, height=1500)
+        self.document.recompute()
+
+        line_baseline = wall_from_line.Proxy.get_global_baseline(wall_from_line)
+        sketch_baseline = wall_from_sketch.Proxy.get_global_baseline(wall_from_sketch)
+        self.assertTrue(line_baseline.start_point.isEqual(line.Start, 1e-6))
+        self.assertTrue(line_baseline.end_point.isEqual(line.End, 1e-6))
+        self.assertTrue(sketch_baseline.start_point.isEqual(App.Vector(1000, 200, 0), 1e-6))
+        self.assertTrue(sketch_baseline.end_point.isEqual(App.Vector(0, 200, 0), 1e-6))
+
+    def test_get_global_baseline_matches_transformed_wall_geometry(self):
+        """Baseline coordinates include base, wall, and explicit normal transforms."""
+        base_placement = App.Placement(
+            App.Vector(100, 500, 20), App.Rotation(App.Vector(0, 0, 1), 45)
+        )
+        wall_placement = App.Placement(
+            App.Vector(300, -200, 40), App.Rotation(App.Vector(0, 0, 1), 30)
+        )
+        line = Draft.makeLine(App.Vector(0, 0, 0), App.Vector(2000, 0, 0))
+        line.Placement = base_placement
+        wall = Arch.makeWall(line, width=200, height=1500)
+        wall.Placement = wall_placement
+        wall.Normal = App.Vector(0, 1, 1)
+        self.document.recompute()
+
+        baseline = wall.Proxy.get_global_baseline(wall)
+        expected_start = wall_placement.multVec(line.Start)
+        expected_end = wall_placement.multVec(line.End)
+        expected_normal = wall_placement.Rotation.multVec(wall.Normal)
+        expected_normal.normalize()
+        self.assertTrue(baseline.start_point.isEqual(expected_start, 1e-6))
+        self.assertTrue(baseline.end_point.isEqual(expected_end, 1e-6))
+        self.assertTrue(baseline.normal.isEqual(expected_normal, 1e-6))
+        expected_edge = Part.makeLine(expected_start, expected_end)
+        self.assertAlmostEqual(wall.Shape.distToShape(expected_edge)[0], 0.0, delta=1e-6)
+        self.assertTrue(wall.Shape.BoundBox.isValid())
+
+    def test_get_global_baseline_preserves_orientation_after_round_trip(self):
+        """Provider endpoint orientation survives document serialization."""
+        line = Draft.makeLine(App.Vector(1000, 0, 0), App.Vector(0, 0, 0))
+        wall = Arch.makeWall(line, width=200, height=1500)
+        self.document.recompute()
+        wall_name = wall.Name
+
+        fd, path = tempfile.mkstemp(suffix=".FCStd")
+        os.close(fd)
+        try:
+            document_name = self.document.Name
+            self.document.saveAs(path)
+            App.closeDocument(document_name)
+            self.document = App.openDocument(path)
+            self.document.recompute()
+            restored_wall = self.document.getObject(wall_name)
+            baseline = restored_wall.Proxy.get_global_baseline(restored_wall)
+            self.assertTrue(baseline.start_point.isEqual(App.Vector(1000, 0, 0), 1e-6))
+            self.assertTrue(baseline.end_point.isEqual(App.Vector(0, 0, 0), 1e-6))
+        finally:
+            if self.document:
+                App.closeDocument(self.document.Name)
+                self.document = None
+            if os.path.exists(path):
+                os.unlink(path)
+
+    def test_get_global_baseline_rejects_unsupported_based_walls(self):
+        """Multi-edge and curved wall bases are not join baselines."""
+        wire = Draft.makeWire(
+            [App.Vector(0, 0, 0), App.Vector(1000, 0, 0), App.Vector(1000, 1000, 0)]
+        )
+        self.document.recompute()
+        wire_wall = Arch.makeWall(wire, width=200, height=1500)
+        self.document.recompute()
+        self.assertIsNone(wire_wall.Proxy.get_global_baseline(wire_wall))
+
+        arc = Draft.make_circle(radius=500, startangle=0, endangle=90)
+        self.document.recompute()
+        curved_wall = Arch.makeWall(arc, width=200, height=1500)
+        self.document.recompute()
+        self.assertIsNone(curved_wall.Proxy.get_global_baseline(curved_wall))
+
+    def test_resolved_section_matches_visible_shape_bounds(self):
+        """Invisible material layers move the cursor but never become faces."""
+        material_a = Arch.makeMaterial()
+        material_b = Arch.makeMaterial()
+        material = Arch.makeMultiMaterial()
+        material.Materials = [material_a, material_b]
+        material.Thicknesses = [100, -50]
+
+        wall = Arch.makeWall(length=2000, width=150, height=1000, align="Center")
+        wall.Material = material
+        self.document.recompute()
+
+        section = wall.Proxy.get_resolved_section(wall)
+        self.assertEqual([layer.raw_thickness for layer in section.layers], [100, -50])
+        self.assertAlmostEqual(wall.Shape.BoundBox.YMin, section.y_min, delta=1e-6)
+        self.assertAlmostEqual(wall.Shape.BoundBox.YMax, section.y_max, delta=1e-6)
+
+    def test_resolved_section_applies_wall_overrides_and_defaults(self):
+        """Short overrides resolve each segment against the wall defaults."""
+        wire = Draft.makeWire(
+            [App.Vector(0, 0, 0), App.Vector(1000, 0, 0), App.Vector(1000, 1000, 0)]
+        )
+        wall = Arch.makeWall(wire, width=100, height=1000, align="Center", offset=10)
+        wall.OverrideWidth = [300]
+        wall.OverrideAlign = ["Left"]
+        wall.OverrideOffset = [25]
+
+        first = wall.Proxy.get_resolved_section(wall, segment_index=0)
+        second = wall.Proxy.get_resolved_section(wall, segment_index=1)
+
+        self.assertEqual([layer.raw_thickness for layer in first.layers], [300])
+        self.assertEqual([layer.raw_thickness for layer in second.layers], [100])
+        self.assertEqual(wall.Proxy.get_width(wall, widths=False), 100.0)
+        self.assertEqual(wall.Proxy.get_width(wall), (100.0, [300]))
+
+        self.document.recompute()
+        section = wall.Proxy.get_resolved_section(wall)
+        self.assertAlmostEqual(section.y_min, -325.0)
+        self.assertAlmostEqual(section.y_max, -25.0)
+
+        first_segment = wall.Shape.common(Part.makeBox(2, 2000, 1000, App.Vector(499, -1000, 0)))
+        self.assertAlmostEqual(first_segment.BoundBox.YMin, section.y_min, delta=1e-6)
+        self.assertAlmostEqual(first_segment.BoundBox.YMax, section.y_max, delta=1e-6)
+
+        second_section = wall.Proxy.get_resolved_section(wall, segment_index=1)
+        second_segment = wall.Shape.common(Part.makeBox(2000, 2, 1000, App.Vector(-500, 499, 0)))
+        self.assertAlmostEqual(
+            second_segment.BoundBox.XMin, 1000 + second_section.y_min, delta=1e-6
+        )
+        self.assertAlmostEqual(
+            second_segment.BoundBox.XMax, 1000 + second_section.y_max, delta=1e-6
+        )
+
+    def test_resolved_material_layers_use_wall_width_for_all_segments(self):
+        """Variable material layers use the wall width, not segment overrides."""
+        wire = Draft.makeWire(
+            [App.Vector(0, 0, 0), App.Vector(1000, 0, 0), App.Vector(1000, 1000, 0)]
+        )
+        material = Arch.makeMultiMaterial()
+        material.Materials = [Arch.makeMaterial(), Arch.makeMaterial()]
+        material.Thicknesses = [50, 0]
+        wall = Arch.makeWall(wire, width=100, height=1000, align="Center")
+        wall.Material = material
+        wall.OverrideWidth = [300, 100]
+        self.document.recompute()
+
+        first = wall.Proxy.get_resolved_section(wall, segment_index=0)
+        second = wall.Proxy.get_resolved_section(wall, segment_index=1)
+        self.assertEqual([layer.raw_thickness for layer in first.layers], [50, 50])
+        self.assertEqual([layer.raw_thickness for layer in second.layers], [50, 50])
+
+        second_segment = wall.Shape.common(Part.makeBox(2000, 2, 1000, App.Vector(-500, 499, 0)))
+        self.assertAlmostEqual(second_segment.BoundBox.XMin, 1000 + second.y_min, delta=1e-6)
+        self.assertAlmostEqual(second_segment.BoundBox.XMax, 1000 + second.y_max, delta=1e-6)
+
+    def test_resolved_section_rejects_invalid_alignment_values(self):
+        """Invalid alignment sources fall back to wall.Align."""
+        wall = Arch.makeWall(length=2000, width=100, height=1000, align="Center")
+        wall.OverrideAlign = ["Bogus"]
+        section = wall.Proxy.get_resolved_section(wall)
+        self.assertAlmostEqual(section.y_min, -50.0)
+        self.assertAlmostEqual(section.y_max, 50.0)
+
+        class InvalidArchSketchProvider:
+            Type = "ArchSketch"
+
+            @staticmethod
+            def getWidths(_obj, **_kwargs):
+                return [100]
+
+            @staticmethod
+            def getAligns(_obj, **_kwargs):
+                return ["Bogus"]
+
+            @staticmethod
+            def getOffsets(_obj, **_kwargs):
+                return [0]
+
+        base = self.document.addObject("Part::FeaturePython", "InvalidArchSketchBase")
+        base.Proxy = InvalidArchSketchProvider()
+        provider_wall = Arch.makeWall(length=2000, width=100, height=1000, align="Center")
+        provider_wall.Base = base
+        provider_wall.ArchSketchData = True
+        provider_section = provider_wall.Proxy.get_resolved_section(provider_wall)
+        self.assertAlmostEqual(provider_section.y_min, -50.0)
+        self.assertAlmostEqual(provider_section.y_max, 50.0)
+
+    def test_wall_ending_properties_trim_wall(self):
+        """Tests that EndingStart/EndingEnd placements trim and restore a wall shape."""
+        self.printTestMessage("Checking wall ending properties...")
+
+        wall = Arch.makeWall(length=2000, width=200, height=1000)
+        self.document.recompute()
+        initial_volume = wall.Shape.Volume
+        self.assertGreater(initial_volume, 0)
+
+        wall.EndingEnd = App.Placement(
+            App.Vector(1000, 0, 0),
+            App.Rotation(App.Vector(0, 0, 1), 45) * App.Rotation(App.Vector(0, 1, 0), 90),
+        )
+        self.document.recompute()
+
+        self.assertTrue(wall.Shape.isValid(), "Wall shape became invalid after trimming.")
+        self.assertLess(wall.Shape.Volume, initial_volume)
+        self.assertLess(wall.Shape.BoundBox.XMax, 1000.01)
+
+        wall.EndingEnd = App.Placement()
+        self.document.recompute()
+        self.assertAlmostEqual(wall.Shape.Volume, initial_volume, delta=1e-6)
+
+    def test_wall_end_condition_selector_orders_sources(self):
+        """Tests that end-condition selection follows the configured order."""
+        manual = ArchWallEndCondition.WallEndCondition(
+            source="Manual",
+            placement=App.Placement(App.Vector(100, 0, 0), App.Rotation()),
+        )
+        relation = ArchWallEndCondition.WallEndCondition(
+            source="Relation",
+            placement=App.Placement(App.Vector(200, 0, 0), App.Rotation()),
+            is_global=True,
+            extension=12.5,
+        )
+
+        order = ["Manual", "Relation", "Manual", "Bogus"]
+        active = ArchWallEndCondition.select_end_condition([relation, manual], order)
+        self.assertEqual(
+            ArchWallEndCondition.normalize_end_condition_order(order), ["Manual", "Relation"]
+        )
+        self.assertEqual(active.source, "Manual")
+
+        active = ArchWallEndCondition.select_end_condition(
+            [relation, manual], ["Relation", "Manual"]
+        )
+        self.assertEqual(active.source, "Relation")
+        self.assertTrue(active.is_global)
+        self.assertAlmostEqual(active.extension, 12.5)
+
+        inactive_relation = ArchWallEndCondition.WallEndCondition(source="Relation", extension=25.0)
+        self.assertIs(
+            ArchWallEndCondition.select_end_condition(
+                [inactive_relation, manual], ["Relation", "Manual"]
+            ),
+            manual,
+        )
+
+    def test_wall_end_conditions_require_brep_export(self):
+        """Walls with processed end planes must not use untrimmed IFC extrusions."""
+        self.printTestMessage("Checking IFC representation selection for wall endings...")
+
+        wall = Arch.makeWall(length=2000, width=200, height=1000)
+        self.document.recompute()
+        self.assertFalse(wall.Proxy.requires_brep_export(wall))
+        self.assertTrue(wall.Proxy.isStandardCase(wall))
+
+        wall.EndingEnd = App.Placement(
+            App.Vector(1000, 0, 0),
+            App.Rotation(App.Vector(0, 0, 1), 45) * App.Rotation(App.Vector(0, 1, 0), 90),
+        )
+        self.document.recompute()
+
+        self.assertTrue(
+            wall.Proxy.requires_brep_export(wall),
+            "A wall with an active end condition must export its processed shape.",
+        )
+        self.assertFalse(
+            wall.Proxy.isStandardCase(wall),
+            "A BREP-exported wall must not be classified as IfcWallStandardCase.",
+        )
+
+        wall.EndingEnd = App.Placement()
+        self.document.recompute()
+        self.assertFalse(wall.Proxy.requires_brep_export(wall))
+        self.assertTrue(wall.Proxy.isStandardCase(wall))
+
+    def test_wall_end_condition_order_changes_active_trim(self):
+        """Tests that the configured order changes which trim drives the wall end."""
+        support_wall = Arch.makeWall(length=2000, width=200, height=1000)
+        trimmed_wall = Arch.makeWall(length=1000, width=200, height=1000)
+        trimmed_wall.Placement = App.Placement(
+            App.Vector(1000, 500, 0),
+            App.Rotation(App.Vector(1, 0, 0), App.Vector(0, 1, 0)),
+        )
+        self.document.recompute()
+
+        joint = Arch.makeWallJoint(support_wall, trimmed_wall, "Butt")
+        joint.ButtTrimmed = "WallB"
+        support_wall.EndingEnd = App.Placement(
+            App.Vector(600, 0, 0), App.Rotation(App.Vector(0, 1, 0), 90)
+        )
+        self.document.recompute()
+        joint_first_xmax = support_wall.Shape.BoundBox.XMax
+        self.assertGreater(joint_first_xmax, 800.0)
+
+        support_wall.EndConditionOrderEnd = ["Manual", "Relation"]
+        self.document.recompute()
+        self.assertAlmostEqual(support_wall.Shape.BoundBox.XMax, 600.0, delta=1e-4)
+
     def test_wall_makeblocks(self):
         """Test the 'MakeBlocks' feature for both based and baseless Arch Walls.
         This is a regression test for https://github.com/FreeCAD/FreeCAD/issues/26982,
@@ -536,7 +880,7 @@ class TestArchWall(TestArchBase.TestArchBase):
         expected_vol = L * W * H
 
         # Create both wall variants: one with a base line, one baseless
-        line = Draft.make_line(App.Vector(0, 0, 0), App.Vector(L, 0, 0))
+        line = Draft.makeLine(App.Vector(0, 0, 0), App.Vector(L, 0, 0))
         self.document.recompute()
         based_wall = Arch.makeWall(line, width=W, height=H)
         baseless_wall = Arch.makeWall(None, length=L, width=W, height=H)
@@ -578,7 +922,7 @@ class TestArchWall(TestArchBase.TestArchBase):
         # Create a base line offset by 5 meters for a clear distinction between local (0,0,0) and
         # global coordinates.
         # Line start/end: (5000,0,0) / (7000,0,0). Midpoint/new placement: (6000,0,0).
-        line = Draft.make_line(App.Vector(0, 0, 0), App.Vector(2000, 0, 0))
+        line = Draft.makeLine(App.Vector(0, 0, 0), App.Vector(2000, 0, 0))
         line.Placement.Base = App.Vector(5000, 0, 0)
         self.document.recompute()
 
@@ -609,7 +953,7 @@ class TestArchWall(TestArchBase.TestArchBase):
 
         # Child D: a hosted Arch.Window. This is not an Addition but is found via InList by
         # getMovableChildren.
-        win_base = Draft.make_rectangle(length=500, height=800)
+        win_base = Draft.makeRectangle(length=500, height=800)
         win_base.Placement.Rotation = App.Rotation(App.Vector(1, 0, 0), 90)  # Orient vertically
         win_base.Placement.Base = App.Vector(6500, 100, 1000)  # Position in wall center
         self.document.recompute()
@@ -694,43 +1038,4 @@ class TestArchWall(TestArchBase.TestArchBase):
         self.assertAlmostEqual(bb.YMin, offset, delta=1e-6, msg="Right: YMin should be offset")
         self.assertAlmostEqual(
             bb.YMax, width + offset, delta=1e-6, msg="Right: YMax should be width+offset"
-        )
-
-    def test_line_based_wall_with_length_expression(self):
-        """Test that a line based wall correctly handles an expression for its Length property.
-
-        Regression test for https://github.com/FreeCAD/FreeCAD/issues/32584.
-        """
-        self.printTestMessage("Checking line based wall with length expression")
-
-        line = Draft.make_line(App.Vector(0, 0, 0), App.Vector(1000, 0, 0))
-        wall = Arch.makeWall(line)
-        self.document.recompute()
-
-        # 1st test: Change the length of the line.
-        new_line_length = 2000
-        line.Length = new_line_length
-        self.document.recompute()
-        self.assertAlmostEqual(
-            wall.Length.Value,
-            new_line_length,
-            delta=1e-6,
-            msg="New length of line did not correctly update wall",
-        )
-
-        # 2nd test: Change the length of the wall by applying an expression.
-        new_wall_length = 3000
-        wall.setExpression("Length", "3 m")
-        self.document.recompute()
-        self.assertAlmostEqual(
-            wall.Length.Value,
-            new_wall_length,
-            delta=1e-6,
-            msg="Length expression of wall did not correctly update wall",
-        )
-        self.assertAlmostEqual(
-            line.Length.Value,
-            new_wall_length,
-            delta=1e-6,
-            msg="Length expression of wall did not correctly update line",
         )

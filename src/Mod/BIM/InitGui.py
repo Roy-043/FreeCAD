@@ -1,23 +1,26 @@
 # SPDX-License-Identifier: LGPL-2.1-or-later
-# SPDX-FileCopyrightText: 2017 Yorik van Havre
-# SPDX-FileNotice: Part of the FreeCAD project.
 
-################################################################################
-#                                                                              #
-#   FreeCAD is free software: you can redistribute it and/or modify            #
-#   it under the terms of the GNU Lesser General Public License as             #
-#   published by the Free Software Foundation, either version 2.1              #
-#   of the License, or (at your option) any later version.                     #
-#                                                                              #
-#   FreeCAD is distributed in the hope that it will be useful,                 #
-#   but WITHOUT ANY WARRANTY; without even the implied warranty                #
-#   of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.                    #
-#   See the GNU Lesser General Public License for more details.                #
-#                                                                              #
-#   You should have received a copy of the GNU Lesser General Public           #
-#   License along with FreeCAD. If not, see https://www.gnu.org/licenses       #
-#                                                                              #
-################################################################################
+# ***************************************************************************
+# *                                                                         *
+# *   Copyright (c) 2017 Yorik van Havre <yorik@uncreated.net>              *
+# *                                                                         *
+# *   This file is part of FreeCAD.                                         *
+# *                                                                         *
+# *   FreeCAD is free software: you can redistribute it and/or modify it    *
+# *   under the terms of the GNU Lesser General Public License as           *
+# *   published by the Free Software Foundation, either version 2.1 of the  *
+# *   License, or (at your option) any later version.                       *
+# *                                                                         *
+# *   FreeCAD is distributed in the hope that it will be useful, but        *
+# *   WITHOUT ANY WARRANTY; without even the implied warranty of            *
+# *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU      *
+# *   Lesser General Public License for more details.                       *
+# *                                                                         *
+# *   You should have received a copy of the GNU Lesser General Public      *
+# *   License along with FreeCAD. If not, see                               *
+# *   <https://www.gnu.org/licenses/>.                                      *
+# *                                                                         *
+# ***************************************************************************
 
 """The BIM workbench"""
 
@@ -106,6 +109,7 @@ class BIMWorkbench(Workbench):
             "Separator",
             "Arch_Wall",
             "Arch_CurtainWall",
+            "BIM_JoinTools",
             "BIM_Column",
             "BIM_Beam",
             "BIM_Slab",
@@ -137,12 +141,11 @@ class BIMWorkbench(Workbench):
         ]
         self.modify_2d = [
             "BIM_OffsetTools",
-            "BIM_Trimex",
+            "Draft_Trimex",
             "Draft_Join",
             "Draft_Split",
             "Draft_Stretch",
             "Draft_Draft2Sketch",
-            "Draft_Edit",
         ]
         self.modify_obj = [
             "Draft_Upgrade",
@@ -153,7 +156,7 @@ class BIMWorkbench(Workbench):
         self.modify_3d = [
             "BIM_ArrayTools",
             "Arch_CutPlane",
-            "BIM_ExtrudeTools",
+            "BIM_Extrude",
             "BIM_BooleanTools",
         ]
 
@@ -190,10 +193,12 @@ class BIMWorkbench(Workbench):
             "Arch_Check",
             "Arch_ToggleIfcBrepFlag",
             "Arch_ToggleSubs",
+            "Arch_Survey",
             "BIM_Diff",
             "BIM_IfcExplorer",
             "Arch_IfcSpreadsheet",
             "BIM_ImagePlane",
+            "BIM_Unclone",
             "BIM_Rewire",
             "BIM_Glue",
             "BIM_Reextrude",
@@ -281,9 +286,9 @@ class BIMWorkbench(Workbench):
                 # default: Draft_ArrayTools (the main Array UI)
                 return (
                     "Draft_OrthoArray",
-                    "Draft_PathLinkArray",
+                    "Draft_PathArray",
                     "Draft_PolarArray",
-                    "Draft_PointLinkArray",
+                    "Draft_PointArray",
                 )
 
             def GetResources(self):
@@ -307,19 +312,6 @@ class BIMWorkbench(Workbench):
             def IsActive(self):
                 return hasattr(FreeCADGui.getMainWindow().getActiveWindow(), "getSceneGraph")
 
-        class BIM_ExtrudeTools:
-            def GetCommands(self):
-                # default: face extrusion (BIM_ExtrudeFace)
-                return ("BIM_ExtrudeFace", "BIM_Extrude")
-
-            def GetResources(self):
-                label = QT_TRANSLATE_NOOP("BIM_ExtrudeTools", "Extrude Tools")
-                tooltip = label
-                return {"MenuText": label, "ToolTip": tooltip, "Icon": "BIM_ExtrudeFace"}
-
-            def IsActive(self):
-                return hasattr(FreeCADGui.getMainWindow().getActiveWindow(), "getSceneGraph")
-
         class BIM_IfcManageTools:
             def GetCommands(self):
                 return (
@@ -339,7 +331,7 @@ class BIMWorkbench(Workbench):
 
         class BIM_ReportTools:
             def GetCommands(self):
-                return ("BIM_Report", "Arch_Schedule", "Arch_Survey")
+                return ("BIM_Report", "Arch_Schedule")
 
             def GetResources(self):
                 label = QT_TRANSLATE_NOOP("BIM_ReportTools", "Report Tools")
@@ -351,7 +343,7 @@ class BIMWorkbench(Workbench):
 
         class BIM_CloneTools:
             def GetCommands(self):
-                return ("BIM_Clone", "BIM_LinkMake", "BIM_Unclone")
+                return ("BIM_Clone", "BIM_LinkMake")
 
             def GetResources(self):
                 label = QT_TRANSLATE_NOOP("BIM_CloneTools", "Cloning Tools")
@@ -385,12 +377,7 @@ class BIMWorkbench(Workbench):
         # create 2D views command
         class BIM_Create2DViews:
             def GetCommands(self):
-                return (
-                    "BIM_DrawingView",
-                    "BIM_Shape2DView",
-                    "BIM_Shape2DCut",
-                    "Draft_UpdateShape2DView",
-                )
+                return ("BIM_DrawingView", "BIM_Shape2DView", "BIM_Shape2DCut")
 
             def GetResources(self):
                 t = QT_TRANSLATE_NOOP("BIM_Create2DViews", "Create 2D Views")
@@ -407,12 +394,34 @@ class BIMWorkbench(Workbench):
         FreeCADGui.addCommand("BIM_OffsetTools", BIM_OffsetTools())
         FreeCADGui.addCommand("BIM_ArrayTools", BIM_ArrayTools())
         FreeCADGui.addCommand("BIM_BooleanTools", BIM_BooleanTools())
-        FreeCADGui.addCommand("BIM_ExtrudeTools", BIM_ExtrudeTools())
         FreeCADGui.addCommand("BIM_IfcManageTools", BIM_IfcManageTools())
         FreeCADGui.addCommand("BIM_ReportTools", BIM_ReportTools())
         FreeCADGui.addCommand("BIM_GenericTools", BIM_GenericTools())
         FreeCADGui.addCommand("BIM_Create2DViews", BIM_Create2DViews())
         FreeCADGui.addCommand("BIM_CloneTools", BIM_CloneTools())
+
+        class BIM_JoinTools:
+            def GetCommands(self):
+                # This method tells FreeCAD which commands belong to this group
+                return [
+                    "BIM_Join_Miter",
+                    "BIM_Join_Butt",
+                    "BIM_Join_Tee",
+                    "BIM_Join_Junction",
+                    "BIM_EditWallJoint",
+                    "BIM_Unjoin",
+                ]
+
+            def GetResources(self):
+                # This method defines the appearance of the main button
+                t = QT_TRANSLATE_NOOP("BIM_JoinTools", "Join tools")
+                return {"MenuText": t, "ToolTip": t, "Icon": "BIM_Join_Miter"}
+
+            def IsActive(self):
+                v = hasattr(FreeCADGui.getMainWindow().getActiveWindow(), "getSceneGraph")
+                return v
+
+        FreeCADGui.addCommand("BIM_JoinTools", BIM_JoinTools())
 
         # load rebar tools (Reinforcement addon)
         try:
@@ -586,7 +595,6 @@ class BIMWorkbench(Workbench):
             ("BIM_BooleanTools", BIM_BooleanTools),
             ("BIM_CloneTools", BIM_CloneTools),
             ("BIM_Create2DViews", BIM_Create2DViews),
-            ("BIM_ExtrudeTools", BIM_ExtrudeTools),
             ("BIM_GenericTools", BIM_GenericTools),
             ("BIM_IfcManageTools", BIM_IfcManageTools),
             ("BIM_OffsetTools", BIM_OffsetTools),
@@ -643,8 +651,6 @@ class BIMWorkbench(Workbench):
         from nativeifc import ifc_observer
         from draftutils import grid_observer
 
-        translate = FreeCAD.Qt.translate
-
         PARAMS = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/BIM")
 
         if hasattr(FreeCADGui, "draftToolBar"):
@@ -689,11 +695,9 @@ class BIMWorkbench(Workbench):
 
         FreeCADGui.Control.addTaskWatcher(
             [
-                BimWatcher(
-                    self.draftingtools + self.annotationtools, translate("BIM", "2D Drafting")
-                ),
-                BimWatcher(self.bimtools, translate("BIM", "3D/BIM Geometry")),
-                BimWatcher(self.modify, translate("BIM", "Modify"), invert=True),
+                BimWatcher(self.draftingtools + self.annotationtools, "2D Geometry"),
+                BimWatcher(self.bimtools, "3D/BIM Geometry"),
+                BimWatcher(self.modify, "Modify", invert=True),
             ]
         )
 
@@ -791,19 +795,8 @@ class BIMWorkbench(Workbench):
     def ContextMenu(self, recipient):
 
         import DraftTools
-        from draftutils import utils
 
         translate = FreeCAD.Qt.translate
-
-        if recipient == "View":
-            self.appendContextMenu(translate("BIM", "Snapping"), self.snapmenu)
-
-        if FreeCADGui.Selection.getSelection():
-            for obj in FreeCADGui.Selection.getSelection():
-                if utils.get_type(obj) != "Shape2DView":
-                    break
-            else:
-                self.appendContextMenu("", ["Draft_UpdateShape2DView"])
 
         if recipient == "Tree":
             groups = False
@@ -834,7 +827,8 @@ class BIMWorkbench(Workbench):
                 FreeCADGui.Selection.getSelection()[0].Name == "Trash"
             ):
                 self.appendContextMenu("", ["BIM_EmptyTrash"])
-
+        elif recipient == "View":
+            self.appendContextMenu(translate("BIM", "Snapping"), self.snapmenu)
         if FreeCADGui.Selection.getSelection():
             if FreeCADGui.Selection.getSelection()[0].Name != "Trash":
                 self.appendContextMenu("", ["BIM_Trash"])
@@ -879,3 +873,5 @@ FreeCADGui.addPreferencePage(":/ui/preferences-webgl.ui", t)
 
 # Add unit tests
 FreeCAD.__unit_test__ += ["TestArchGui"]
+# The NativeIFC tests require internet connection and file download
+# FreeCAD.__unit_test__ += ["nativeifc.ifc_selftest"]
